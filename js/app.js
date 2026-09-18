@@ -1,8 +1,10 @@
 const API_URL = "http://localhost:3000";
 
-/**
- * Obtiene las tareas desde json-server
- */
+
+// =========================================================
+// OBTENER TODAS LAS TAREAS
+// =========================================================
+
 async function obtenerTareas() {
     try {
         const respuesta = await fetch(`${API_URL}/tasks`);
@@ -23,16 +25,16 @@ async function obtenerTareas() {
 }
 
 
-/**
- * Muestra las tareas en la columna correspondiente
- */
+// =========================================================
+// MOSTRAR TAREAS
+// =========================================================
+
 function mostrarTareas(tareas) {
 
     const listaTodo = document.getElementById("lista-todo");
     const listaDoing = document.getElementById("lista-doing");
     const listaDone = document.getElementById("lista-done");
 
-    // Vaciar las listas antes de volver a pintarlas
     listaTodo.innerHTML = "";
     listaDoing.innerHTML = "";
     listaDone.innerHTML = "";
@@ -58,9 +60,10 @@ function mostrarTareas(tareas) {
 }
 
 
-/**
- * Crea una tarjeta HTML a partir de una tarea
- */
+// =========================================================
+// CREAR TARJETA
+// =========================================================
+
 function crearTarjeta(tarea) {
 
     const tarjeta = document.createElement("article");
@@ -79,10 +82,12 @@ function crearTarjeta(tarea) {
 
     tarjeta.innerHTML = `
         <div class="tarjeta-cabecera">
+
             <span class="prioridad ${obtenerClasePrioridad(tarea.priority)}">
                 ${obtenerIconoPrioridad(tarea.priority)}
                 ${tarea.priority}
             </span>
+
         </div>
 
         <h3>${tarea.title}</h3>
@@ -90,20 +95,291 @@ function crearTarjeta(tarea) {
         <p>${tarea.description}</p>
 
         <div class="tarjeta-fecha">
+
             <span aria-hidden="true">▣</span>
+
             <time datetime="${tarea.dueDate}">
                 ${formatearFecha(tarea.dueDate)}
             </time>
+
         </div>
     `;
+
+
+    // =====================================================
+    // CLIC EN LA TARJETA
+    // =====================================================
+
+    tarjeta.addEventListener("click", () => {
+        abrirModalDetalle(tarea.id);
+    });
+
+
+    // =====================================================
+    // ACCESO MEDIANTE TECLADO
+    // =====================================================
+
+    tarjeta.addEventListener("keydown", (evento) => {
+
+        if (evento.key === "Enter" || evento.key === " ") {
+
+            evento.preventDefault();
+
+            abrirModalDetalle(tarea.id);
+        }
+    });
+
 
     return tarjeta;
 }
 
 
-/**
- * Devuelve la clase CSS correspondiente a la prioridad
- */
+// =========================================================
+// ABRIR MODAL DE DETALLE
+// =========================================================
+
+async function abrirModalDetalle(taskId) {
+
+    try {
+
+        console.log("Abriendo tarea:", taskId);
+
+
+        // Obtener la tarea concreta
+
+        const respuesta = await fetch(
+            `${API_URL}/tasks/${encodeURIComponent(taskId)}`
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error("No se ha podido obtener la tarea");
+        }
+
+
+        const tarea = await respuesta.json();
+
+
+        console.log("Tarea seleccionada:", tarea);
+
+
+        // ================================================
+        // RELLENAR MODAL
+        // ================================================
+
+        document.getElementById("detalle-titulo").value =
+            tarea.title || "";
+
+        document.getElementById("detalle-descripcion").value =
+            tarea.description || "";
+
+        document.getElementById("detalle-prioridad").value =
+            tarea.priority || "Media";
+
+        document.getElementById("detalle-estado").value =
+            tarea.status || "todo";
+
+        document.getElementById("detalle-fecha").value =
+            tarea.dueDate || "";
+
+
+        // Guardamos temporalmente el ID de la tarea
+        // en el propio modal
+
+        const modal = document.getElementById(
+            "modal-detalle-tarea"
+        );
+
+        modal.dataset.taskId = tarea.id;
+
+
+        // ================================================
+        // CARGAR COMENTARIOS
+        // ================================================
+
+        await cargarComentarios(tarea.id);
+
+
+        // ================================================
+        // MOSTRAR MODAL
+        // ================================================
+
+        modal.classList.remove("oculto");
+
+    } catch (error) {
+
+        console.error(
+            "Error al abrir el detalle:",
+            error
+        );
+    }
+}
+
+
+// =========================================================
+// CARGAR COMENTARIOS
+// =========================================================
+
+async function cargarComentarios(taskId) {
+
+    const listaComentarios =
+        document.getElementById("lista-comentarios");
+
+    const contadorComentarios =
+        document.getElementById("numero-comentarios");
+
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/comments?taskId=${encodeURIComponent(taskId)}`
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se han podido obtener los comentarios"
+            );
+        }
+
+
+        const comentarios = await respuesta.json();
+
+
+        // Limpiar comentarios anteriores
+
+        listaComentarios.innerHTML = "";
+
+
+        // Actualizar contador
+
+        contadorComentarios.textContent =
+            `(${comentarios.length})`;
+
+
+        // Si no hay comentarios
+
+        if (comentarios.length === 0) {
+
+            listaComentarios.innerHTML = `
+                <p class="sin-comentarios">
+                    No hay comentarios todavía.
+                </p>
+            `;
+
+            return;
+        }
+
+
+        // Crear cada comentario
+
+        comentarios.forEach(comentario => {
+
+            const elemento =
+                document.createElement("article");
+
+            elemento.classList.add("comentario");
+
+
+            elemento.innerHTML = `
+                <div class="comentario-cabecera">
+
+                    <span class="comentario-autor">
+                        ${comentario.author}
+                    </span>
+
+                    <span class="comentario-fecha">
+                        ${formatearFechaComentario(
+                            comentario.createdAt
+                        )}
+                    </span>
+
+                </div>
+
+                <p class="comentario-texto">
+                    ${comentario.text}
+                </p>
+            `;
+
+
+            listaComentarios.appendChild(elemento);
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar comentarios:",
+            error
+        );
+
+        listaComentarios.innerHTML = `
+            <p class="sin-comentarios">
+                No se han podido cargar los comentarios.
+            </p>
+        `;
+
+        contadorComentarios.textContent = "(0)";
+    }
+}
+
+
+// =========================================================
+// CERRAR MODAL
+// =========================================================
+
+function cerrarModalDetalle() {
+
+    const modal =
+        document.getElementById("modal-detalle-tarea");
+
+    modal.classList.add("oculto");
+
+    delete modal.dataset.taskId;
+}
+
+
+// Botón X
+
+document
+    .getElementById("cerrar-modal-detalle")
+    .addEventListener(
+        "click",
+        cerrarModalDetalle
+    );
+
+
+// Botón Cerrar
+
+document
+    .getElementById("btn-cerrar-detalle")
+    .addEventListener(
+        "click",
+        cerrarModalDetalle
+    );
+
+
+// =========================================================
+// CERRAR MODAL HACIENDO CLIC FUERA
+// =========================================================
+
+document
+    .getElementById("modal-detalle-tarea")
+    .addEventListener("click", (evento) => {
+
+        if (
+            evento.target.id ===
+            "modal-detalle-tarea"
+        ) {
+            cerrarModalDetalle();
+        }
+    });
+
+
+// =========================================================
+// PRIORIDAD
+// =========================================================
+
 function obtenerClasePrioridad(priority) {
 
     if (priority === "Alta") {
@@ -118,9 +394,6 @@ function obtenerClasePrioridad(priority) {
 }
 
 
-/**
- * Devuelve un símbolo según la prioridad
- */
 function obtenerIconoPrioridad(priority) {
 
     if (priority === "Alta") {
@@ -135,10 +408,15 @@ function obtenerIconoPrioridad(priority) {
 }
 
 
-/**
- * Convierte 2026-09-15 en 15/09/2026
- */
+// =========================================================
+// FECHA DE TAREA
+// =========================================================
+
 function formatearFecha(fecha) {
+
+    if (!fecha) {
+        return "";
+    }
 
     const partes = fecha.split("-");
 
@@ -146,25 +424,84 @@ function formatearFecha(fecha) {
 }
 
 
-/**
- * Actualiza los contadores del tablero
- */
-function actualizarContadores(tareas) {
+// =========================================================
+// FECHA DE COMENTARIO
+// =========================================================
 
-    const todo = tareas.filter(tarea => tarea.status === "todo").length;
-    const doing = tareas.filter(tarea => tarea.status === "doing").length;
-    const done = tareas.filter(tarea => tarea.status === "done").length;
+function formatearFechaComentario(fecha) {
 
-    document.getElementById("contador-todo").textContent = todo;
-    document.getElementById("contador-doing").textContent = doing;
-    document.getElementById("contador-done").textContent = done;
+    if (!fecha) {
+        return "";
+    }
 
-    document.getElementById("total-tareas").textContent = tareas.length;
-    document.getElementById("total-todo").textContent = todo;
-    document.getElementById("total-doing").textContent = doing;
-    document.getElementById("total-done").textContent = done;
+    const fechaObjeto = new Date(fecha);
+
+    return fechaObjeto.toLocaleDateString(
+        "es-ES",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    );
 }
 
 
-// Iniciar aplicación
+// =========================================================
+// CONTADORES
+// =========================================================
+
+function actualizarContadores(tareas) {
+
+    const todo =
+        tareas.filter(
+            tarea => tarea.status === "todo"
+        ).length;
+
+    const doing =
+        tareas.filter(
+            tarea => tarea.status === "doing"
+        ).length;
+
+    const done =
+        tareas.filter(
+            tarea => tarea.status === "done"
+        ).length;
+
+
+    document.getElementById(
+        "contador-todo"
+    ).textContent = todo;
+
+    document.getElementById(
+        "contador-doing"
+    ).textContent = doing;
+
+    document.getElementById(
+        "contador-done"
+    ).textContent = done;
+
+
+    document.getElementById(
+        "total-tareas"
+    ).textContent = tareas.length;
+
+    document.getElementById(
+        "total-todo"
+    ).textContent = todo;
+
+    document.getElementById(
+        "total-doing"
+    ).textContent = doing;
+
+    document.getElementById(
+        "total-done"
+    ).textContent = done;
+}
+
+
+// =========================================================
+// INICIAR APLICACIÓN
+// =========================================================
+
 obtenerTareas();
