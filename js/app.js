@@ -505,3 +505,162 @@ function actualizarContadores(tareas) {
 // =========================================================
 
 obtenerTareas();
+
+// =========================================================
+// MODAL CREAR TAREA
+// =========================================================
+
+const modalCrearTarea = document.getElementById("modal-crear-tarea");
+const btnNuevaTarea = document.getElementById("btn-nueva-tarea");
+const btnCerrarModalCrear = document.getElementById("cerrar-modal-crear");
+const btnCancelarTarea = document.getElementById("cancelar-tarea");
+const formularioTarea = document.getElementById("formulario-tarea");
+
+
+// =========================================================
+// ABRIR MODAL DE CREAR TAREA
+// =========================================================
+
+btnNuevaTarea.addEventListener("click", () => {
+    modalCrearTarea.classList.remove("oculto");
+
+    // Colocar el cursor en el primer campo
+    document.getElementById("titulo").focus();
+});
+
+
+// =========================================================
+// CERRAR MODAL
+// =========================================================
+
+function cerrarModalCrear() {
+    modalCrearTarea.classList.add("oculto");
+    formularioTarea.reset();
+}
+
+
+// Botón X
+btnCerrarModalCrear.addEventListener(
+    "click",
+    cerrarModalCrear
+);
+
+
+// Botón Cancelar
+btnCancelarTarea.addEventListener(
+    "click",
+    cerrarModalCrear
+);
+
+
+// Cerrar haciendo clic fuera del modal
+modalCrearTarea.addEventListener("click", (evento) => {
+
+    if (evento.target === modalCrearTarea) {
+        cerrarModalCrear();
+    }
+
+});
+
+
+// =========================================================
+// CREAR TAREA - POST
+// =========================================================
+
+formularioTarea.addEventListener("submit", async (evento) => {
+
+    evento.preventDefault();
+
+
+    // Obtener valores del formulario
+    const titulo =
+        document.getElementById("titulo").value.trim();
+
+    const descripcion =
+        document.getElementById("descripcion").value.trim();
+
+    const prioridad =
+        document.getElementById("prioridad").value;
+
+    const fecha =
+        document.getElementById("fecha").value;
+
+
+    // Validación básica
+    if (!titulo) {
+        alert("El título de la tarea es obligatorio.");
+        return;
+    }
+
+
+    if (!fecha) {
+        alert("La fecha límite es obligatoria.");
+        return;
+    }
+
+
+    // Objeto que vamos a enviar a json-server
+    const nuevaTarea = {
+        id: Date.now().toString(),
+        title: titulo,
+        description: descripcion,
+        priority: prioridad,
+        dueDate: fecha,
+        status: "todo"
+    };
+
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/tasks`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(nuevaTarea)
+            }
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se ha podido crear la tarea."
+            );
+        }
+
+
+        const tareaCreada = await respuesta.json();
+
+
+        console.log(
+            "Tarea creada correctamente:",
+            tareaCreada
+        );
+
+
+        // Cerrar modal
+        cerrarModalCrear();
+
+
+        // Recargar las tareas desde json-server
+        await obtenerTareas();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al crear la tarea:",
+            error
+        );
+
+        alert(
+            "No se ha podido crear la tarea. " +
+            "Comprueba que json-server está funcionando."
+        );
+    }
+
+});
