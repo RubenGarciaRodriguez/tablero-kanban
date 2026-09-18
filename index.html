@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kanban Flow</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ==================================================
+         HEADER
+    =================================================== -->
+
+    <header class="header">
+
+        <div class="header-logo">
+
+            <div class="logo" aria-hidden="true">
+                K
+            </div>
+
+            <h1>Kanban Flow</h1>
+
+        </div>
+
+
+        <div class="header-search">
+
+            <label
+                for="buscador"
+                class="sr-only"
+            >
+                Buscar tarea por título
+            </label>
+
+            <input
+                type="search"
+                id="buscador"
+                placeholder="Buscar tarea por título..."
+            >
+
+            <span
+                class="atajo-teclado"
+                aria-hidden="true"
+            >
+                ⌘K
+            </span>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="btn-nueva-tarea"
+            class="btn-nueva-tarea"
+        >
+            <span aria-hidden="true">+</span>
+            Nueva tarea
+        </button>
+
+    </header>
+
+
+    <!-- ==================================================
+         ESTADÍSTICAS
+    =================================================== -->
+
+    <section
+        class="estadisticas"
+        aria-label="Estadísticas del tablero"
+    >
+
+        <div class="estadistica">
+
+            <span>Total</span>
+
+            <strong id="total-tareas">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="estadistica">
+
+            <span class="punto estado-todo"></span>
+
+            <span>Por hacer</span>
+
+            <strong id="total-todo">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="estadistica">
+
+            <span class="punto estado-doing"></span>
+
+            <span>En proceso</span>
+
+            <strong id="total-doing">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="estadistica">
+
+            <span class="punto estado-done"></span>
+
+            <span>Finalizado</span>
+
+            <strong id="total-done">
+                0
+            </strong>
+
+        </div>
+
+    </section>
+
+
+    <!-- ==================================================
+         CONTENIDO PRINCIPAL
+    =================================================== -->
+
+    <main>
+
+        <!-- ==================================================
+             FILTROS
+        =================================================== -->
+
+        <section
+            class="filtros"
+            aria-label="Filtros de tareas"
+        >
+
+            <button
+                type="button"
+                class="filtro activo"
+                data-filter="all"
+            >
+                Todas
+            </button>
+
+
+            <button
+                type="button"
+                class="filtro"
+                data-filter="Alta"
+            >
+                <span class="punto prioridad-alta"></span>
+                Alta
+            </button>
+
+
+            <button
+                type="button"
+                class="filtro"
+                data-filter="Media"
+            >
+                <span class="punto prioridad-media"></span>
+                Media
+            </button>
+
+
+            <button
+                type="button"
+                class="filtro"
+                data-filter="Baja"
+            >
+                <span class="punto prioridad-baja"></span>
+                Baja
+            </button>
+
+        </section>
+
+
+        <!-- ==================================================
+             TABLERO KANBAN
+        =================================================== -->
+
+        <section
+            class="tablero"
+            aria-label="Tablero Kanban"
+        >
+
+
+            <!-- ==================================================
+                 COLUMNA POR HACER
+            =================================================== -->
+
+            <article
+                class="columna"
+                data-status="todo"
+            >
+
+                <header class="cabecera-columna">
+
+                    <div class="titulo-columna">
+
+                        <span class="punto estado-todo"></span>
+
+                        <h2>
+                            Por hacer
+                        </h2>
+
+                        <span
+                            class="contador"
+                            id="contador-todo"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+                </header>
+
+
+                <div
+                    class="lista-tareas"
+                    id="lista-todo"
+                >
+
+                    <!-- TARJETA DE EJEMPLO -->
+
+                    <article
+                        class="tarjeta"
+                        data-id="1"
+                        data-priority="Alta"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Ver detalles de Diseñar maqueta en Figma"
+                    >
+
+                        <div class="tarjeta-cabecera">
+
+                            <span class="prioridad prioridad-alta">
+                                ↑ Alta
+                            </span>
+
+                        </div>
+
+
+                        <h3>
+                            Diseñar maqueta en Figma
+                        </h3>
+
+
+                        <p>
+                            Crear los wireframes y prototipos
+                            interactivos del tablero.
+                        </p>
+
+
+                        <div class="tarjeta-fecha">
+
+                            <span aria-hidden="true">
+                                ▣
+                            </span>
+
+                            <time datetime="2026-09-15">
+                                15/09/2026
+                            </time>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </article>
+
+
+            <!-- ==================================================
+                 COLUMNA EN PROCESO
+            =================================================== -->
+
+            <article
+                class="columna"
+                data-status="doing"
+            >
+
+                <header class="cabecera-columna">
+
+                    <div class="titulo-columna">
+
+                        <span class="punto estado-doing"></span>
+
+                        <h2>
+                            En proceso
+                        </h2>
+
+                        <span
+                            class="contador"
+                            id="contador-doing"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+                </header>
+
+
+                <div
+                    class="lista-tareas"
+                    id="lista-doing"
+                >
+
+                    <!-- TARJETA DE EJEMPLO -->
+
+                    <article
+                        class="tarjeta"
+                        data-id="2"
+                        data-priority="Media"
+                        tabindex="0"
+                        role="button"
+                        aria-label="Ver detalles de Configurar json-server"
+                    >
+
+                        <div class="tarjeta-cabecera">
+
+                            <span class="prioridad prioridad-media">
+                                − Media
+                            </span>
+
+                        </div>
+
+
+                        <h3>
+                            Configurar json-server
+                        </h3>
+
+
+                        <p>
+                            Iniciar la API simulada con las
+                            colecciones de tareas y comentarios.
+                        </p>
+
+
+                        <div class="tarjeta-fecha">
+
+                            <span aria-hidden="true">
+                                ▣
+                            </span>
+
+                            <time datetime="2026-09-10">
+                                10/09/2026
+                            </time>
+
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </article>
+
+
+            <!-- ==================================================
+                 COLUMNA FINALIZADO
+            =================================================== -->
+
+            <article
+                class="columna"
+                data-status="done"
+            >
+
+                <header class="cabecera-columna">
+
+                    <div class="titulo-columna">
+
+                        <span class="punto estado-done"></span>
+
+                        <h2>
+                            Finalizado
+                        </h2>
+
+                        <span
+                            class="contador"
+                            id="contador-done"
+                        >
+                            0
+                        </span>
+
+                    </div>
+
+                </header>
+
+
+                <div
+                    class="lista-tareas"
+                    id="lista-done"
+                >
+
+                    <!-- LAS TAREAS SE AÑADIRÁN DESDE JAVASCRIPT -->
+
+                </div>
+
+            </article>
+
+        </section>
+
+    </main>
+
+
+    <!-- ==================================================
+         MODAL CREAR TAREA
+    =================================================== -->
+
+    <div
+        id="modal-crear-tarea"
+        class="modal oculto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-crear"
+    >
+
+        <div class="modal-contenido modal-crear">
+
+            <!-- CABECERA DEL MODAL -->
+
+            <header class="modal-header">
+
+                <div class="modal-titulo">
+
+                    <div
+                        class="icono-modal"
+                        aria-hidden="true"
+                    >
+                        +
+                    </div>
+
+                    <h2 id="titulo-modal-crear">
+                        Nueva tarea
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="cerrar-modal-crear"
+                    class="btn-cerrar"
+                    aria-label="Cerrar ventana de nueva tarea"
+                >
+                    ×
+                </button>
+
+            </header>
+
+
+            <!-- FORMULARIO -->
+
+            <form id="formulario-tarea">
+
+                <div class="campo">
+
+                    <label for="titulo">
+                        Título de la tarea
+                    </label>
+
+                    <input
+                        type="text"
+                        id="titulo"
+                        name="titulo"
+                        placeholder="Ej. Diseñar página de inicio"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="descripcion">
+                        Descripción
+                    </label>
+
+                    <textarea
+                        id="descripcion"
+                        name="descripcion"
+                        rows="4"
+                        placeholder="Describe la tarea..."
+                    ></textarea>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="prioridad">
+                        Prioridad
+                    </label>
+
+                    <select
+                        id="prioridad"
+                        name="prioridad"
+                    >
+
+                        <option value="Baja">
+                            Baja
+                        </option>
+
+                        <option
+                            value="Media"
+                            selected
+                        >
+                            Media
+                        </option>
+
+                        <option value="Alta">
+                            Alta
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="fecha">
+                        Fecha límite
+                    </label>
+
+                    <input
+                        type="date"
+                        id="fecha"
+                        name="fecha"
+                    >
+
+                </div>
+
+
+                <!-- BOTONES -->
+
+                <div class="acciones-modal">
+
+                    <button
+                        type="button"
+                        id="cancelar-tarea"
+                        class="btn-secundario"
+                    >
+                        Cancelar
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        id="crear-tarea"
+                        class="btn-primario"
+                    >
+                        Crear tarea
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         MODAL DETALLE DE TAREA
+    =================================================== -->
+
+    <div
+        id="modal-detalle-tarea"
+        class="modal oculto"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="titulo-modal-detalle"
+    >
+
+        <div class="modal-contenido modal-detalle">
+
+
+            <!-- ==================================================
+                 CABECERA
+            =================================================== -->
+
+            <header class="modal-header">
+
+                <div class="modal-titulo">
+
+                    <div
+                        class="icono-modal"
+                        aria-hidden="true"
+                    >
+                        ▣
+                    </div>
+
+                    <h2 id="titulo-modal-detalle">
+                        Detalle de tarea
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    id="cerrar-modal-detalle"
+                    class="btn-cerrar"
+                    aria-label="Cerrar detalle de tarea"
+                >
+                    ×
+                </button>
+
+            </header>
+
+
+            <!-- ==================================================
+                 CUERPO DEL MODAL
+            =================================================== -->
+
+            <div class="detalle-contenido">
+
+
+                <!-- ==================================================
+                     INFORMACIÓN PRINCIPAL
+                =================================================== -->
+
+                <section class="detalle-principal">
+
+
+                    <!-- TÍTULO -->
+
+                    <div class="campo-detalle">
+
+                        <label for="detalle-titulo">
+                            Título de la tarea
+                        </label>
+
+                        <input
+                            type="text"
+                            id="detalle-titulo"
+                            name="detalle-titulo"
+                        >
+
+                    </div>
+
+
+                    <!-- DESCRIPCIÓN -->
+
+                    <div class="campo-detalle">
+
+                        <label for="detalle-descripcion">
+                            Descripción
+                        </label>
+
+                        <textarea
+                            id="detalle-descripcion"
+                            name="detalle-descripcion"
+                            rows="5"
+                        ></textarea>
+
+                    </div>
+
+
+                    <!-- ==================================================
+                         COMENTARIOS
+                    =================================================== -->
+
+                    <section class="comentarios">
+
+                        <div class="comentarios-titulo">
+
+                            <span
+                                class="icono-comentarios"
+                                aria-hidden="true"
+                            >
+                                ▱
+                            </span>
+
+                            <h3>
+                                Comentarios
+                                <span id="numero-comentarios">
+                                    (0)
+                                </span>
+                            </h3>
+
+                        </div>
+
+
+                        <!-- LISTA DE COMENTARIOS -->
+
+                        <div
+                            id="lista-comentarios"
+                            class="lista-comentarios"
+                        >
+
+                            <!--
+                                JavaScript insertará aquí
+                                los comentarios procedentes
+                                de json-server.
+                            -->
+
+                        </div>
+
+
+                        <!-- ==================================================
+                             AÑADIR COMENTARIO
+                        =================================================== -->
+
+                        <div class="nuevo-comentario">
+
+                            <label for="nuevo-comentario">
+                                Añadir comentario
+                            </label>
+
+                            <textarea
+                                id="nuevo-comentario"
+                                name="nuevo-comentario"
+                                rows="4"
+                                placeholder="Escribe una respuesta o comentario..."
+                            ></textarea>
+
+
+                            <button
+                                type="button"
+                                id="btn-publicar-comentario"
+                                class="btn-primario"
+                            >
+                                Publicar comentario
+                            </button>
+
+                        </div>
+
+                    </section>
+
+                </section>
+
+
+                <!-- ==================================================
+                     PROPIEDADES
+                =================================================== -->
+
+                <aside class="propiedades-tarea">
+
+                    <h3>
+                        Propiedades de tarea
+                    </h3>
+
+
+                    <!-- PRIORIDAD -->
+
+                    <div class="propiedad">
+
+                        <label for="detalle-prioridad">
+                            Prioridad
+                        </label>
+
+                        <select
+                            id="detalle-prioridad"
+                            name="detalle-prioridad"
+                        >
+
+                            <option value="Baja">
+                                Baja
+                            </option>
+
+                            <option value="Media">
+                                Media
+                            </option>
+
+                            <option value="Alta">
+                                Alta
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- ESTADO -->
+
+                    <div class="propiedad">
+
+                        <label for="detalle-estado">
+                            Columna / Estado
+                        </label>
+
+                        <select
+                            id="detalle-estado"
+                            name="detalle-estado"
+                        >
+
+                            <option value="todo">
+                                Por hacer
+                            </option>
+
+                            <option value="doing">
+                                En proceso
+                            </option>
+
+                            <option value="done">
+                                Finalizado
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- FECHA -->
+
+                    <div class="propiedad">
+
+                        <label for="detalle-fecha">
+                            Fecha límite
+                        </label>
+
+                        <input
+                            type="date"
+                            id="detalle-fecha"
+                            name="detalle-fecha"
+                        >
+
+                    </div>
+
+                </aside>
+
+            </div>
+
+
+            <!-- ==================================================
+                 PIE DEL MODAL
+            =================================================== -->
+
+            <footer class="modal-footer">
+
+
+                <!-- ELIMINAR -->
+
+                <button
+                    type="button"
+                    id="btn-eliminar-tarea"
+                    class="btn-eliminar"
+                >
+                    Eliminar
+                </button>
+
+
+                <div class="acciones-modal">
+
+
+                    <!-- CERRAR -->
+
+                    <button
+                        type="button"
+                        id="btn-cerrar-detalle"
+                        class="btn-secundario"
+                    >
+                        Cerrar
+                    </button>
+
+
+                    <!-- GUARDAR -->
+
+                    <button
+                        type="button"
+                        id="btn-guardar-cambios"
+                        class="btn-primario"
+                    >
+                        Guardar cambios
+                    </button>
+
+                </div>
+
+            </footer>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         JAVASCRIPT
+    =================================================== -->
+
+    <script src="js/app.js"></script>
+
+</body>
+
+</html>
