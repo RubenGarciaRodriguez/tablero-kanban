@@ -1008,3 +1008,112 @@ btnEliminarTarea.addEventListener("click", async () => {
     }
 
 });
+
+// =========================================================
+// CREAR COMENTARIO - POST
+// =========================================================
+
+const btnPublicarComentario = document.getElementById(
+    "btn-publicar-comentario"
+);
+
+const inputNuevoComentario = document.getElementById(
+    "nuevo-comentario"
+);
+
+
+btnPublicarComentario.addEventListener("click", async () => {
+
+    // Obtener el modal de detalle
+    const modal = document.getElementById(
+        "modal-detalle-tarea"
+    );
+
+    // Obtener el ID de la tarea que está abierta
+    const taskId = modal.dataset.taskId;
+
+    // Obtener el texto escrito
+    const texto = inputNuevoComentario.value.trim();
+
+
+    // Comprobar que hay una tarea seleccionada
+    if (!taskId) {
+        console.error(
+            "No hay ninguna tarea seleccionada."
+        );
+        return;
+    }
+
+
+    // Comprobar que el comentario no está vacío
+    if (!texto) {
+        alert("Escribe un comentario antes de publicarlo.");
+        return;
+    }
+
+
+    // Crear el objeto del comentario
+    const nuevoComentario = {
+        id: Date.now().toString(),
+        taskId: taskId,
+        author: "Tú",
+        text: texto,
+        createdAt: new Date().toISOString()
+    };
+
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/comments`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(nuevoComentario)
+            }
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se ha podido crear el comentario."
+            );
+        }
+
+
+        const comentarioCreado =
+            await respuesta.json();
+
+
+        console.log(
+            "Comentario creado correctamente:",
+            comentarioCreado
+        );
+
+
+        // Limpiar el campo de texto
+        inputNuevoComentario.value = "";
+
+
+        // Volver a cargar los comentarios
+        await cargarComentarios(taskId);
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al crear el comentario:",
+            error
+        );
+
+        alert(
+            "No se ha podido publicar el comentario. " +
+            "Comprueba que json-server está funcionando."
+        );
+    }
+
+});
