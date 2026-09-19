@@ -1117,3 +1117,44 @@ btnPublicarComentario.addEventListener("click", async () => {
     }
 
 });
+
+// =========================================================
+// BÚSQUEDA EN TIEMPO REAL
+// =========================================================
+
+const buscador = document.getElementById("buscador");
+
+buscador.addEventListener("input", () => {
+    filtrarTareasPorTitulo();
+});
+
+
+function filtrarTareasPorTitulo() {
+
+    const textoBuscado = buscador.value
+        .toLowerCase()
+        .trim();
+
+    const tarjetas = document.querySelectorAll(".tarjeta");
+
+
+    tarjetas.forEach(tarjeta => {
+
+        const titulo =
+            tarjeta.querySelector("h3").textContent
+                .toLowerCase()
+                .trim();
+
+
+        const coincide =
+            titulo.includes(textoBuscado);
+
+
+        if (coincide) {
+            tarjeta.classList.remove("oculta");
+        } else {
+            tarjeta.classList.add("oculta");
+        }
+
+    });
+}
