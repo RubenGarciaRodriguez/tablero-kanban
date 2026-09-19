@@ -800,3 +800,125 @@ formularioTarea.addEventListener("submit", async (evento) => {
     }
 
 });
+
+// =========================================================
+// EDITAR TAREA DESDE EL MODAL
+// =========================================================
+
+const btnGuardarCambios = document.getElementById(
+    "btn-guardar-cambios"
+);
+
+
+btnGuardarCambios.addEventListener("click", async () => {
+
+    const modal = document.getElementById(
+        "modal-detalle-tarea"
+    );
+
+    const taskId = modal.dataset.taskId;
+
+
+    // Comprobar que existe una tarea seleccionada
+    if (!taskId) {
+        console.error("No hay ninguna tarea seleccionada.");
+        return;
+    }
+
+
+    // Obtener los valores del modal
+    const titulo =
+        document.getElementById("detalle-titulo").value.trim();
+
+    const descripcion =
+        document
+            .getElementById("detalle-descripcion")
+            .value
+            .trim();
+
+    const prioridad =
+        document.getElementById("detalle-prioridad").value;
+
+    const estado =
+        document.getElementById("detalle-estado").value;
+
+    const fecha =
+        document.getElementById("detalle-fecha").value;
+
+
+    // Validaciones
+    if (!titulo) {
+        alert("El título no puede estar vacío.");
+        return;
+    }
+
+    if (!fecha) {
+        alert("La fecha límite es obligatoria.");
+        return;
+    }
+
+
+    // Objeto con los cambios
+    const cambios = {
+        title: titulo,
+        description: descripcion,
+        priority: prioridad,
+        status: estado,
+        dueDate: fecha
+    };
+
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/tasks/${encodeURIComponent(taskId)}`,
+            {
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(cambios)
+            }
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se han podido guardar los cambios."
+            );
+        }
+
+
+        const tareaActualizada =
+            await respuesta.json();
+
+
+        console.log(
+            "Tarea actualizada:",
+            tareaActualizada
+        );
+
+
+        // Cerrar modal
+        cerrarModalDetalle();
+
+
+        // Volver a cargar el tablero desde el servidor
+        await obtenerTareas();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al editar la tarea:",
+            error
+        );
+
+        alert(
+            "No se han podido guardar los cambios."
+        );
+    }
+
+});
