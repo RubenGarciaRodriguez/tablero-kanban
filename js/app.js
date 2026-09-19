@@ -922,3 +922,89 @@ btnGuardarCambios.addEventListener("click", async () => {
     }
 
 });
+
+// =========================================================
+// ELIMINAR TAREA
+// =========================================================
+
+const btnEliminarTarea = document.getElementById(
+    "btn-eliminar-tarea"
+);
+
+
+btnEliminarTarea.addEventListener("click", async () => {
+
+    const modal = document.getElementById(
+        "modal-detalle-tarea"
+    );
+
+    const taskId = modal.dataset.taskId;
+
+
+    // Comprobar que existe una tarea seleccionada
+    if (!taskId) {
+        console.error("No hay ninguna tarea seleccionada.");
+        return;
+    }
+
+
+    // Obtener el título para mostrarlo en la confirmación
+    const titulo =
+        document.getElementById("detalle-titulo").value.trim();
+
+
+    const confirmar = confirm(
+        `¿Seguro que quieres eliminar la tarea "${titulo}"?`
+    );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/tasks/${encodeURIComponent(taskId)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se ha podido eliminar la tarea."
+            );
+        }
+
+
+        console.log(
+            `Tarea ${taskId} eliminada correctamente.`
+        );
+
+
+        // Cerrar modal
+        cerrarModalDetalle();
+
+
+        // Volver a cargar las tareas desde json-server
+        await obtenerTareas();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al eliminar la tarea:",
+            error
+        );
+
+
+        alert(
+            "No se ha podido eliminar la tarea. " +
+            "Comprueba que json-server está funcionando."
+        );
+    }
+
+});
