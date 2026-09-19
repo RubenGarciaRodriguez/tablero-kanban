@@ -1,3 +1,5 @@
+let sortableInstances = [];
+
 const API_URL = "http://localhost:3000";
 
 
@@ -35,10 +37,15 @@ function mostrarTareas(tareas) {
     const listaDoing = document.getElementById("lista-doing");
     const listaDone = document.getElementById("lista-done");
 
+    // Destruir Sortable anterior antes de volver a pintar
+    destruirSortable();
+
+    // Vaciar listas
     listaTodo.innerHTML = "";
     listaDoing.innerHTML = "";
     listaDone.innerHTML = "";
 
+    // Crear tarjetas
     tareas.forEach(tarea => {
 
         const tarjeta = crearTarjeta(tarea);
@@ -57,6 +64,135 @@ function mostrarTareas(tareas) {
     });
 
     actualizarContadores(tareas);
+
+    // Activar Drag & Drop
+    inicializarSortable();
+}
+
+function inicializarSortable() {
+
+    const listas = document.querySelectorAll(".lista-tareas");
+
+    listas.forEach(lista => {
+
+        const sortable = new Sortable(lista, {
+
+            group: "kanban",
+
+            animation: 200,
+
+            ghostClass: "tarjeta-arrastrando",
+
+            onEnd: async function (evento) {
+
+                const tarjeta = evento.item;
+
+                const taskId = tarjeta.dataset.id;
+
+                const columnaAnterior =
+                    evento.from.closest(".columna");
+
+                const columnaNueva =
+                    evento.to.closest(".columna");
+
+
+                const oldStatus =
+                    columnaAnterior.dataset.status;
+
+                const newStatus =
+                    columnaNueva.dataset.status;
+
+
+                // Si se ha movido dentro de la misma columna,
+                // no necesitamos PATCH
+                if (oldStatus === newStatus) {
+                    return;
+                }
+
+
+                console.log(
+                    `Tarea ${taskId}: ${oldStatus} → ${newStatus}`
+                );
+
+
+                await actualizarEstadoTarea(
+                    taskId,
+                    newStatus
+                );
+            }
+        });
+
+
+        sortableInstances.push(sortable);
+    });
+}
+
+async function actualizarEstadoTarea(taskId, nuevoStatus) {
+
+    try {
+
+        const respuesta = await fetch(
+            `${API_URL}/tasks/${encodeURIComponent(taskId)}`,
+            {
+                method: "PATCH",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    status: nuevoStatus
+                })
+            }
+        );
+
+
+        if (!respuesta.ok) {
+            throw new Error(
+                "No se ha podido actualizar el estado de la tarea"
+            );
+        }
+
+
+        const tareaActualizada =
+            await respuesta.json();
+
+
+        console.log(
+            "Estado actualizado:",
+            tareaActualizada
+        );
+
+
+        // Volver a cargar datos del servidor
+        await obtenerTareas();
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al actualizar el estado:",
+            error
+        );
+
+
+        alert(
+            "No se ha podido actualizar el estado de la tarea."
+        );
+
+
+        // Restaurar el tablero al estado del servidor
+        await obtenerTareas();
+    }
+}
+
+function destruirSortable() {
+
+    sortableInstances.forEach(sortable => {
+        sortable.destroy();
+    });
+
+    sortableInstances = [];
 }
 
 

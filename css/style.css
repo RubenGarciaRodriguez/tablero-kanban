@@ -1058,6 +1058,10 @@ main {
     border-top: 1px solid #edf0f6;
 }
 
+.tarjeta-arrastrando {
+    opacity: 0.45;
+    transform: rotate(1deg);
+}
 
 /* =========================================================
    TABLET
