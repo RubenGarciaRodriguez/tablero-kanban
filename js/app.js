@@ -1240,3 +1240,30 @@ function cerrarMenu() {
     );
 
 }
+
+// =========================================================
+// CERRAR MODALES CON ESCAPE
+// =========================================================
+
+document.addEventListener("keydown", (evento) => {
+
+    if (evento.key !== "Escape") {
+        return;
+    }
+
+    const modalDetalle = document.getElementById(
+        "modal-detalle-tarea"
+    );
+
+    const modalCrear = document.getElementById(
+        "modal-crear-tarea"
+    );
+
+    if (!modalDetalle.classList.contains("oculto")) {
+        cerrarModalDetalle();
+    }
+
+    if (!modalCrear.classList.contains("oculto")) {
+        cerrarModalCrear();
+    }
+});

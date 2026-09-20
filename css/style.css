@@ -1427,3 +1427,16 @@ main {
         left: 10px;
     }
 }
+
+/* =========================================================
+   ACCESIBILIDAD - FOCO DEL TECLADO
+========================================================= */
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 3px solid rgba(75, 63, 232, 0.25);
+    outline-offset: 2px;
+}
