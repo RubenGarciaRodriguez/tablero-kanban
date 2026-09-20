@@ -1158,3 +1158,85 @@ function filtrarTareasPorTitulo() {
 
     });
 }
+
+// =========================================================
+// MENÚ HAMBURGUESA
+// =========================================================
+
+const btnMenu = document.getElementById("btn-menu");
+const menuNavegacion = document.getElementById("menu-navegacion");
+
+
+// Abrir / cerrar menú
+btnMenu.addEventListener("click", () => {
+
+    const abierto =
+        menuNavegacion.classList.toggle("abierto");
+
+    btnMenu.classList.toggle("abierto", abierto);
+
+    btnMenu.setAttribute(
+        "aria-expanded",
+        abierto
+    );
+
+    btnMenu.setAttribute(
+        "aria-label",
+        abierto
+            ? "Cerrar menú"
+            : "Abrir menú"
+    );
+});
+
+
+// Cerrar menú al pulsar un enlace
+const enlacesMenu =
+    menuNavegacion.querySelectorAll("a");
+
+enlacesMenu.forEach(enlace => {
+
+    enlace.addEventListener("click", () => {
+
+        cerrarMenu();
+
+    });
+
+});
+
+
+// Botón "Nueva tarea" dentro del menú
+const menuNuevaTarea =
+    document.getElementById("menu-nueva-tarea");
+
+
+menuNuevaTarea.addEventListener("click", () => {
+
+    cerrarMenu();
+
+    modalCrearTarea.classList.remove("oculto");
+
+    document
+        .getElementById("titulo")
+        .focus();
+
+});
+
+
+// Función para cerrar el menú
+function cerrarMenu() {
+
+    menuNavegacion.classList.remove("abierto");
+
+    btnMenu.classList.remove("abierto");
+
+    btnMenu.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+    btnMenu.setAttribute(
+        "aria-label",
+        "Abrir menú"
+    );
+
+}

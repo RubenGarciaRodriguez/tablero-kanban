@@ -1273,3 +1273,157 @@ main {
 .tarjeta.oculta {
     display: none;
 }
+
+/* =========================================================
+   MENÚ HAMBURGUESA
+========================================================= */
+
+/* Botón oculto en escritorio */
+.btn-menu {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 0;
+
+    border: 0;
+    border-radius: 9px;
+
+    background: transparent;
+    color: var(--text);
+}
+
+.btn-menu:hover {
+    background: #edf1f8;
+}
+
+.linea-menu {
+    display: block;
+
+    width: 19px;
+    height: 2px;
+
+    border-radius: 2px;
+
+    background: currentColor;
+
+    transition:
+        transform 0.2s ease,
+        opacity 0.2s ease;
+}
+
+
+/* Menú cerrado */
+.menu-navegacion {
+    display: none;
+}
+
+
+/* =========================================================
+   MENÚ EN MÓVIL
+========================================================= */
+
+@media (max-width: 760px) {
+
+    .btn-menu {
+        display: flex;
+    }
+
+    .menu-navegacion {
+        position: absolute;
+
+        top: calc(100% + 8px);
+        right: 14px;
+        left: 14px;
+
+        z-index: 100;
+
+        display: none;
+
+        flex-direction: column;
+        gap: 5px;
+
+        padding: 10px;
+
+        background: white;
+
+        border: 1px solid var(--border);
+        border-radius: 12px;
+
+        box-shadow: 0 12px 30px rgba(30, 43, 70, 0.15);
+    }
+
+    .menu-navegacion.abierto {
+        display: flex;
+    }
+
+    .menu-navegacion a,
+    .menu-navegacion button {
+        width: 100%;
+
+        min-height: 42px;
+
+        display: flex;
+        align-items: center;
+
+        padding: 0 13px;
+
+        border: 0;
+        border-radius: 8px;
+
+        background: transparent;
+        color: var(--text);
+
+        text-decoration: none;
+
+        font-size: 13px;
+        font-weight: 600;
+
+        text-align: left;
+    }
+
+    .menu-navegacion a:hover,
+    .menu-navegacion button:hover {
+        background: #edf2ff;
+    }
+
+    .menu-navegacion a:focus-visible,
+    .menu-navegacion button:focus-visible {
+        outline: 3px solid rgba(75, 63, 232, 0.16);
+        outline-offset: 1px;
+    }
+
+
+    /* Animación del icono hamburguesa */
+
+    .btn-menu.abierto .linea-menu:nth-child(1) {
+        transform: translateY(6px) rotate(45deg);
+    }
+
+    .btn-menu.abierto .linea-menu:nth-child(2) {
+        opacity: 0;
+    }
+
+    .btn-menu.abierto .linea-menu:nth-child(3) {
+        transform: translateY(-6px) rotate(-45deg);
+    }
+}
+
+
+/* =========================================================
+   MÓVIL PEQUEÑO
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .menu-navegacion {
+        right: 10px;
+        left: 10px;
+    }
+}
