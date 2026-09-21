@@ -6,7 +6,7 @@
       "description": "Crear los wireframes y prototipos interactivos del tablero.",
       "priority": "Alta",
       "dueDate": "2026-09-15",
-      "status": "todo"
+      "status": "doing"
     },
     {
       "id": "2",
@@ -31,6 +31,14 @@
       "author": "Carlos Ruiz",
       "text": "Ya subí la paleta de colores al canal de Figma.",
       "createdAt": "2026-09-06T11:15:00Z"
+    },
+    {
+      "id": "LdpdpzhWS2Y",
+      "taskId": "1",
+      "author": "Tú",
+      "text": "Comentario de prueba para la presentación.",
+      "createdAt": "2026-09-21T20:42:01.017Z"
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
